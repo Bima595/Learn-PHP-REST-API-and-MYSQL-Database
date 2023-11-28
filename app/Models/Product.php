@@ -32,9 +32,9 @@ public function findAll()
 }
 
 public function findById($id){
-    $sql = "SELECT * FROM product WHERE id ?";
+    $sql = "SELECT * FROM product WHERE id = ?";
     $stmt = $this->conn->prepare($sql);
-    $stmt->bind_param("i", $id);
+    $stmt->bind_param('i', $id);
     $stmt ->execute();
     $result = $stmt->get_result();
     $this->conn->close();
@@ -54,8 +54,8 @@ public function create($data){
     $this->conn->close();
 }
 
-public function update($id, $data){
-    $productNam = $data['product_name'];
+public function update($data, $id){
+    $productName = $data['product_name'];
 
     $query = "UPDATE product SET product_name = ? WHERE id = ?";
     $stmt = $this->conn->prepare($query);
