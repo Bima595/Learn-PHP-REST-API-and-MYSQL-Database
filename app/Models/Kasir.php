@@ -5,7 +5,7 @@ namespace app\Models;
 use app\Config\DatabaseConfig;
 use mysqli;
 
-class Product extends DatabaseConfig{
+class Kasir extends DatabaseConfig{
 public $conn;
 
 public function __construct()
@@ -18,9 +18,13 @@ public function __construct()
 
 public function findAll()
 {
-    $sql = "SELECT * FROM product";
+    $sql = "SELECT kasir.*, product.product_name 
+            FROM kasir
+            JOIN product ON kasir.idProduct = product.id";
+    
     $result = $this->conn->query($sql);
     $this->conn->close();
+    
     $data = [];
     while($row = $result->fetch_assoc()){
         $data[] = $row;
@@ -29,8 +33,9 @@ public function findAll()
     return $data;
 }
 
+
 public function findById($id){
-    $sql = "SELECT * FROM product WHERE id = ?";
+    $sql = "SELECT * FROM kasir WHERE id = ?";
     $stmt = $this->conn->prepare($sql);
     $stmt->bind_param('i', $id);
     $stmt ->execute();
@@ -44,26 +49,28 @@ public function findById($id){
 }
 
 public function create($data){
-    $productName = $data['product_name'];
-    $query = "INSERT INTO product (product_name) VALUES (?)";
+    $shift = $data['shift'];
+    $idProduct = $data['idProduct'];
+    $query = "INSERT INTO kasir (shift, idproduct) VALUES (?, ?)";
     $stmt = $this->conn->prepare($query);
-    $stmt->bind_param("s", $productName);
+    $stmt->bind_param("si", $shift, $idProduct);
     $stmt->execute();
     $this->conn->close();
 }
 
-public function update($data, $id){
-    $productName = $data['product_name'];
-
-    $query = "UPDATE product SET product_name = ? WHERE id = ?";
+public function update($data, $id) {
+    $shift = $data['shift'];
+    $idProduct = $data['idProduct'];
+    $query = "UPDATE kasir SET shift = ?, idProduct = ? WHERE id = ?";
     $stmt = $this->conn->prepare($query);
-    $stmt->bind_param("si", $productName, $id);
+    $stmt->bind_param("sii", $shift, $idProduct, $id);
     $stmt->execute();
     $this->conn->close();
 }
+
 
 public function destroy($id){
-    $query = "DELETE FROM product WHERE id = ?";
+    $query = "DELETE FROM kasir WHERE id = ?";
     $stmt = $this->conn->prepare($query);
     $stmt->bind_param("i", $id);
     $stmt->execute();
